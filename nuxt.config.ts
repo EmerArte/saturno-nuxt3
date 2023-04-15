@@ -8,6 +8,11 @@ export default defineNuxtConfig({
 
   vuestic: {
     config: {
+      components:{
+        VaModal:{
+          mobileFullscreen:false
+        }
+      }
       // Vuestic config here
     },
   },

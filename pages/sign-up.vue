@@ -116,17 +116,36 @@
         </va-form>
       </va-card>
     </div>
+    <!-- Modal -->
+    <va-modal v-model="showCustomContent">
+      <template #content="{ ok }">
+        <div class="flex flex-col items-center justify-center">
+          <img src="~/assets/email-message.svg" class="w-32 md:w-42 lg:w-60" />
+
+          <h1
+            class="text-2xl sm:text-5xl font-mono uppercase lg:text-4xl font-extrabold leading-none tracking-tight text-gray-900"
+          >
+            Confirma tu cuenta!
+          </h1>
+          <p class="font-sans leading-normal text-justify my-2">
+            Hemos enviado un correo a {{ email }} para activar tu cuenta. Por
+            favor revisa tu correo electronico y sigue los pasos enviados en el.
+            Gracias por ser parte de Doggy!
+          </p>
+          <va-card-actions align="center">
+            <va-button color="primary" @click="ok"> Entendido! </va-button>
+          </va-card-actions>
+        </div>
+      </template>
+    </va-modal>
   </div>
 </template>
 <script>
 definePageMeta({
   middleware: ["auth-middleware"],
 });
-const emailRegex =
-  /^("(?:[!#-\[\]-\u{10FFFF}]|\\[\t -\u{10FFFF}])*"|[!#-'*+\-/-9=?A-Z\^-\u{10FFFF}](?:\.?[!#-'*+\-/-9=?A-Z\^-\u{10FFFF}])*)@([!#-'*+\-/-9=?A-Z\^-\u{10FFFF}](?:\.?[!#-'*+\-/-9=?A-Z\^-\u{10FFFF}])*|\[[!-Z\^-\u{10FFFF}]*\])$/u;
-//const passwordRegex =
-//  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/u;
-const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/u;
+import {validationMessages as msg}  from "~/utils/validation.messages";
+import {EMAIL_REGEX, PASSWORD_REGEX,ID_NUMBER_REGEX, PHONE_REGEX} from '~/utils/regex'
 export default {
   setup() {
     //SUPABASE CLIENT
@@ -147,85 +166,70 @@ export default {
       typeIdentificationInput: "",
       identificationNumberInput: null,
       direccionInput: "",
-      isCloseableAlertVisible: true,
-      errorMessage: "",
+
+      //variables
+      email: null,
       //validations
-      emailRules: [(v) => (v && emailRegex.test(v)) || "E-mail no válido"],
+      emailRules: [(v) => (v && EMAIL_REGEX.test(v)) || msg.email],
       phoneNumberRules: [
         (v) =>
-          (v && /^[0-9 ]{10,}$/u.test(v)) || "Número de Teléfono no válido",
+          (v && PHONE_REGEX.test(v)) || msg.phone
       ],
       identificationNumberRules: [
         (v) =>
-          (v && /^[0-9]{6,}$/u.test(v)) || "Número de identificación no válido",
+          (v && ID_NUMBER_REGEX.test(v)) || msg.idNumber
       ],
       passwordValidation: [
         (v) =>
-          (v && passwordRegex.test(v)) ||
-          "La contraseña ingresada no satisface las politicas de seguridad",
+          (v && PASSWORD_REGEX.test(v)) ||
+          msg.password
       ],
       validation: null,
-
       //utils
       isPasswordVisible: false,
       cityAvailable: ["Montería", "Pueblo Nuevo"],
       identificationAvaliable: ["C.C", "T.I", "C.E"],
+      isCloseableAlertVisible: true,
+      showCustomContent: false,
+      errorMessage: "",
     };
   },
   methods: {
     async signUp() {
-      const { data, error } = await this.client.auth.signUp({
-        email: "arteagaemer@gmail.com",
-        password: "emer2009",
-        phone: "3022773185"
-      });
-      console.log(data,error);
-      if (error) {
-        this.errorMessage = error.message;
-        this.showAlert();
-      } else {
-        const { _, error } = await this.client.from("profiles").insert([
-          {
-            id: data.user.id,
-            first_name: "Emer",
-            last_name: "Arteaga",
-            identity_number: 1003048255,
-            identity_type: "C.C",
-            addresss: "CRA 13W #23-44",
-          },
-        ]);
+      this.$refs.form.validate();
+      if (this.validation === true) {
+        this.email = this.emailInput;
+        const { data, error } = await this.client.auth.signUp({
+          email: this.emailInput,
+          password: this.passwordInput,
+          phone: this.phoneNumberInput,
+        });
         if (error) {
           this.errorMessage = error.message;
           this.showAlert();
-        }else{
-          navigateTo('/confirm-account')
+        } else {
+          const { _, error } = await this.client.from("profiles").insert([
+            {
+              id: data.user.id,
+              first_name: this.nameInput,
+              last_name: this.lastNameInput,
+              identity_number: this.identificationNumberInput,
+              identity_type: this.typeIdentificationInput,
+              phone_number: this.phoneNumberInput,
+              addresss: this.direccionInput,
+            },
+          ]);
+          if (error) {
+            this.errorMessage = error.message;
+            this.showAlert();
+          } else {
+            this.showCustomContent = true;
+          }
         }
+      } else {
+        setTimeout(() => (this.isCloseableAlertVisible = false), 1000);
       }
-      // this.$refs.form.validate();
-      // if (this.validation === true) {
-      //   const { user, error } = await this.client.auth.signUp({
-      //     email: this.emailInput,
-      //     password: this.passwordInput,
-      //     options: {
-      //       data: {
-      //         first_name: this.nameInput,
-      //         last_name: this.lastNameInput,
-      //         identity_number: this.identificationNumberInput,
-      //         identity_type: this.typeIdentificationInput,
-      //         phone_number: this.phoneNumberInput,
-      //         addresss: this.direccionInput,
-      //       },
-      //     },
-      //   });
-      //   console.log(user, error);
-      // } else {
-      //   setTimeout(() => (this.isCloseableAlertVisible = false), 1000);
-      // }
-    },
-    showAlert() {
-      setTimeout(() => (this.isCloseableAlertVisible = false), 1000);
     },
   },
 };
 </script>
-<style></style>

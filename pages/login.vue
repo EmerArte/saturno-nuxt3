@@ -45,18 +45,28 @@
         >
       </va-card-actions>
     </div>
+    <va-alert
+    color="danger"
+    class="mb-6"
+    :model-value="errorAlert"
+  >
+    {{errorMessage}}
+  </va-alert>
   </div>
 </template>
 <script>
 definePageMeta({
   middleware: ["auth-middleware"],
 });
+import {validationMessages as msg}  from "~/utils/validation.messages";
 import { EMAIL_REGEX, PASSWORD_REGEX } from "~/utils/regex";
 export default {
   setup() {
     const client = useSupabaseClient();
+    const user  = useSupabaseUser();
     return {
-      client
+      client,
+      user
     };
   },
   data() {
@@ -69,14 +79,35 @@ export default {
         (v) => (v && PASSWORD_REGEX.test(v)) || msg.password,
       ],
 
-      isCloseableAlertVisible: true,
+      errorAlert: false,
       isPasswordVisible: false,
+      errorMessage: "",
+
     };
   },
   methods:{
-    login(){
-      
+    async login(){
+      const { user, error} = await this.client.auth.signInWithPassword(
+        {
+          email: this.emailInput,
+          password: this.passwordInput
+        }
+      );
+      if(error){
+        this.errorAlert = true;
+        this.errorMessage = error.message;
+      }
+      if(user){
+        console.log("login exitoso");
+      }
     }
+  },
+  onMounted(){
+    watchEffect(()=>{
+      if(this.user.value){
+        navigateTo("/dashboard")
+      }
+    })
   }
 };
 </script>

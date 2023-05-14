@@ -230,6 +230,9 @@ export default {
         setTimeout(() => (this.isCloseableAlertVisible = false), 1000);
       }
     },
+    showAlert(){
+      setTimeout(() => (this.isCloseableAlertVisible = false), 1000);
+    }
   },
 };
 </script>

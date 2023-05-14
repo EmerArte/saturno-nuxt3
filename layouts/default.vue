@@ -131,6 +131,7 @@ export default {
   data() {
     return {
       isOpen: false,
+      isLogged: false
     };
   },
   setup() {
@@ -146,6 +147,13 @@ export default {
       return this.$route.name;
     },
   },
+  onMounted(){
+    watchEffect(()=>{
+      if(this.user.value){
+        this.isLogged = true;
+      }
+    })
+  }
 };
 </script>
 <style lang=""></style>

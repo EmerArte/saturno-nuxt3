@@ -1,12 +1,14 @@
 <template>
   <div class="flex flex-col justify-center items-center h-screen">
-    <div class="w-[80%] md:w-1/3">
-      <h2 class="text-center text-xl uppercase font-extrabold font-mono my-3">
+    <div class="w-[80%] md:w-[42%] flex flex-col items-center justify-evenly">
+      <h2
+        class="text-center text-xl md:text-2xl uppercase font-extrabold font-mono my-3 w-full"
+      >
         Iniciar sesión
       </h2>
-      <va-card-content>
+      <va-card-content class="w-[80%]">
         <va-form ref="form" @validation="validation = $event">
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-5">
             <va-input
               v-model="emailInput"
               label="Email"
@@ -31,6 +33,17 @@
           </div>
         </va-form>
       </va-card-content>
+      <va-card-actions align="between" class="w-[80%]">
+        <va-button @click="login()" class="w-1/2 text-white">Iniciar sesión</va-button>
+        <va-button
+          preset="plain"
+          class="w-1/2 text-xs"
+          gradient
+          color="primary"
+          @click="($event) => navigateTo('/sign-up')"
+          >¿Aún no tienes cuenta?</va-button
+        >
+      </va-card-actions>
     </div>
   </div>
 </template>
@@ -41,7 +54,10 @@ definePageMeta({
 import { EMAIL_REGEX, PASSWORD_REGEX } from "~/utils/regex";
 export default {
   setup() {
-    return {};
+    const client = useSupabaseClient();
+    return {
+      client
+    };
   },
   data() {
     return {
@@ -54,13 +70,13 @@ export default {
       ],
 
       isCloseableAlertVisible: true,
+      isPasswordVisible: false,
     };
   },
+  methods:{
+    login(){
+      
+    }
+  }
 };
 </script>
-<style>
-.figura-rara {
-  height: 35%;
-  clip-path: polygon(0% 30%, 100% 0%, 100% 100%, 0% 100%);
-}
-</style>

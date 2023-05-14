@@ -4,18 +4,18 @@ module.exports = {
 	theme: {
 		extend: {
 			colors: {
-				primary: '#154EC1',
-				secondary: '#767C88',
+				primary: "#F5A623",
+				secondary: '#1C1C1C',
 				success: '#3D9209',
 				info: '#158DE3',
 				danger: '#E42222',
 				warning: '#FFD43A',
-				backgroundPrimary: '#f6f6f6',
-				backgroundSecondary: '#FFFFFF',
+				backgroundPrimary: '#1C1C1C',
+				backgroundSecondary: '#2b2b2b',
 				backgroundElement: '#ECF0F1',
 				backgroundBorder: '#DEE5F2',
-				textPrimary: '#262824',
-				textInverted: '#FFFFFF',
+				textPrimary: '#FFFFFF',
+				textInverted: '#000000',
 				shadow: 'rgba(0, 0, 0, 0.12)',
 				focus: '#49A8FF',
 			},
@@ -30,4 +30,4 @@ module.exports = {
 	},
 	plugins: [
 ],
-}
+}    

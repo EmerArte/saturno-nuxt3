@@ -14,7 +14,7 @@
       <va-card class="w-[85%] md:w-1/3">
         <!-- Titulo -->
         <h2
-          class="text-center text-xl text-blue-600 uppercase font-extrabold font-sans my-3"
+          class="text-center text-xl text-primary uppercase font-extrabold font-sans my-3"
         >
           Registrar usuario
         </h2>

@@ -2,15 +2,15 @@
   <div>
     <nav class="fixed w-full p-6 bg-transparent z-50">
       <div class="flex items-center justify-between">
-        <img src="~/assets/icon.svg" class="w-12 h-12" />
+        <img src="~/assets/logo.svg" class="h-12" />
         <!-- Mobile toggle -->
         <div class="md:hidden">
-          <button @click="isOpen = !isOpen" >
+          <button @click="isOpen = !isOpen">
             <va-icon name="menu" />
           </button>
         </div>
         <div class="hidden md:block">
-          <ul class="flex space-x-8 text-sm font-mono">
+          <ul class="flex space-x-8 text-lg md:text-base font-mono">
             <!-- <li class="p-3" :class="isLogged ? 'hidden' : currentRouteName==='login' ? ' text-orange-500' : 'text-gray-800'">Blog</li> -->
             <li
               class="p-3 rounded-sm cursor-pointer bg-transparent transition ease-in-out hover:font-bold delay-[50ms] hover:-translate-y-1 hover:scale-110 duration-300"
@@ -54,33 +54,73 @@
           </ul>
         </div>
         <div
-        :class="isOpen ? 'translate-x-96 transition delay-150 duration-300 ease-in-out': '-translate-x-96 transition delay-150 duration-300 ease-in-out'"
-          class="absolute top-0 -left-96 h-screen w-1/2 shadow-lg bg-white md:hidden" 
+          :class="
+            isOpen
+              ? 'translate-x-96 transition delay-150 duration-300 ease-in-out'
+              : '-translate-x-96 transition delay-150 duration-300 ease-in-out'
+          "
+          class="absolute top-0 -left-96 h-screen w-full bg-transparent md:hidden"
           id="mobile-menu"
         >
-        <!--  -->
-          <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a
-              href="#"
-              class="block px-3 py-2 rounded-md text-base font-medium text-white bg-gray-900"
-              >Inicio</a
+        <div class="flex flex-row w-full h-full">
+          <ul
+            class="flex flex-nowrap flex-col items-center w-2/3 h-full shadow-lg bg-white font-mono mg:text-md text-lg"
+          >
+            <li class="my-10">
+              <a href="/" class="w-full">
+                <img
+                  src="~/assets/logo.svg"
+                  class="h-12 mx-0"
+                  title="main_logo"
+                />
+              </a>
+            </li>
+
+            <!-- <li class="p-3" :class="isLogged ? 'hidden' : currentRouteName==='login' ? ' text-orange-500' : 'text-gray-800'">Blog</li> -->
+            <li
+              class="p-3 rounded-sm cursor-pointer bg-transparent transition ease-in-out hover:font-bold delay-[50ms] hover:-translate-y-1 hover:scale-110 duration-300"
+              :class="
+                isLogged
+                  ? 'hidden'
+                  : currentRouteName === 'login'
+                  ? ' text-orange-500'
+                  : 'text-gray-800'
+              "
+              @click="navigateTo('/login')"
             >
-            <a
-              href="#"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
-              >Productos</a
+              Iniciar sesión
+            </li>
+            <li
+              class="p-3 rounded-sm cursor-pointer bg-transparent transition ease-in-out hover:font-bold delay-[50ms] hover:-translate-y-1 hover:scale-110 duration-300"
+              :class="
+                isLogged
+                  ? 'hidden'
+                  : currentRouteName === 'sign-up'
+                  ? ' text-orange-500'
+                  : 'text-gray-800'
+              "
+              @click="navigateTo('/sign-up')"
             >
-            <a
-              href="#"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
-              >Servicios</a
+              Registrarse
+            </li>
+            <li
+              class="p-3 rounded-sm cursor-pointer bg-transparent transition ease-in-out hover:font-bold delay-[50ms] hover:-translate-y-1 hover:scale-110 duration-300"
+              :class="
+                isLogged
+                  ? 'hidden'
+                  : currentRouteName === 'dashboard'
+                  ? ' text-orange-500'
+                  : 'text-gray-800'
+              "
+              @click="navigateTo('/dashboard')"
             >
-            <a
-              href="#"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
-              >Contacto</a
-            >
-          </div>
+              Dashboard
+            </li>
+          </ul>
+          <a class="block md:hidden w-1/3 cursor-pointer transparent m-0 p-0 h-full" @click="isOpen = !isOpen"></a>
+        </div>
+         
+          <!--  -->
         </div>
       </div>
     </nav>

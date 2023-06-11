@@ -144,14 +144,21 @@
 definePageMeta({
   middleware: ["auth-middleware"],
 });
-import {validationMessages as msg}  from "~/utils/validation.messages";
-import {EMAIL_REGEX, PASSWORD_REGEX,ID_NUMBER_REGEX, PHONE_REGEX} from '~/utils/regex'
+import { validationMessages as msg } from "~/utils/validation.messages";
+import {
+  EMAIL_REGEX,
+  PASSWORD_REGEX,
+  ID_NUMBER_REGEX,
+  PHONE_REGEX,
+} from "~/utils/regex";
 export default {
   setup() {
     //SUPABASE CLIENT
     const client = useSupabaseClient();
+    const loading = useLoading();
     return {
       client,
+      loading,
     };
   },
   data() {
@@ -171,18 +178,12 @@ export default {
       email: null,
       //validations
       emailRules: [(v) => (v && EMAIL_REGEX.test(v)) || msg.email],
-      phoneNumberRules: [
-        (v) =>
-          (v && PHONE_REGEX.test(v)) || msg.phone
-      ],
+      phoneNumberRules: [(v) => (v && PHONE_REGEX.test(v)) || msg.phone],
       identificationNumberRules: [
-        (v) =>
-          (v && ID_NUMBER_REGEX.test(v)) || msg.idNumber
+        (v) => (v && ID_NUMBER_REGEX.test(v)) || msg.idNumber,
       ],
       passwordValidation: [
-        (v) =>
-          (v && PASSWORD_REGEX.test(v)) ||
-          msg.password
+        (v) => (v && PASSWORD_REGEX.test(v)) || msg.password,
       ],
       validation: null,
       //utils
@@ -197,14 +198,16 @@ export default {
   methods: {
     async signUp() {
       this.$refs.form.validate();
+      this.loading = true;
       if (this.validation === true) {
         this.email = this.emailInput;
         const { data, error } = await this.client.auth.signUp({
           email: this.emailInput,
           password: this.passwordInput,
-          phone: this.phoneNumberInput,
+          phone: this.phoneNumberInput.toString(),
         });
         if (error) {
+          console.log(error);
           this.errorMessage = error.message;
           this.showAlert();
         } else {
@@ -215,7 +218,6 @@ export default {
               last_name: this.lastNameInput,
               identity_number: this.identificationNumberInput,
               identity_type: this.typeIdentificationInput,
-              phone_number: this.phoneNumberInput,
               addresss: this.direccionInput,
             },
           ]);
@@ -223,16 +225,30 @@ export default {
             this.errorMessage = error.message;
             this.showAlert();
           } else {
+            this.resetForm();
+            this.navigateTo('/login')
             this.showCustomContent = true;
           }
         }
       } else {
-        setTimeout(() => (this.isCloseableAlertVisible = false), 1000);
+        setTimeout(() => (this.isCloseableAlertVisible = false), 4000);
       }
+      this.loading = false;
     },
-    showAlert(){
-      setTimeout(() => (this.isCloseableAlertVisible = false), 1000);
-    }
+    showAlert() {
+      setTimeout(() => (this.isCloseableAlertVisible = false), 4000);
+    },
+    resetForm() {
+      (this.nameInput = ""),
+        (this.lastNameInput = ""),
+        (this.phoneNumberInput = ""),
+        (this.emailInput = ""),
+        (this.cityInput = ""),
+        (this.passwordInput = ""),
+        (this.typeIdentificationInput = ""),
+        (this.identificationNumberInput = null),
+        (this.direccionInput = "");
+    },
   },
 };
 </script>

@@ -45,13 +45,6 @@
         >
       </va-card-actions>
     </div>
-    <va-alert
-    color="danger"
-    class="mb-6"
-    :model-value="errorAlert"
-  >
-    {{errorMessage}}
-  </va-alert>
   </div>
 </template>
 <script>
@@ -64,9 +57,11 @@ export default {
   setup() {
     const client = useSupabaseClient();
     const user  = useSupabaseUser();
+    const loading = useLoading();
     return {
       client,
-      user
+      user,
+      loading
     };
   },
   data() {
@@ -87,20 +82,21 @@ export default {
   },
   methods:{
     async login(){
+      this.loading = true;
       const { user, error} = await this.client.auth.signInWithPassword(
         {
           email: this.emailInput,
           password: this.passwordInput
         }
       );
+      this.loading = false;
       if(error){
-        this.errorAlert = true;
-        this.errorMessage = error.message;
+        this.$vaToast.init({color:"danger", message: error.message,  duration: 3000})
       }
-      if(user){
-        console.log("login exitoso");
+      if(user.value){
+        navigateTo("/dashboard")
       }
-    }
+    },
   },
   onMounted(){
     watchEffect(()=>{

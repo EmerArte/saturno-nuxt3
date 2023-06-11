@@ -1,13 +1,6 @@
 <template>
     <div>
-      <va-button
-        preset="plain"
-        class="w-1/2"
-        gradient
-        color="primary"
-        @click="signOut"
-        >Cerrar sesión</va-button
-      >
+      <h1>Dashboard</h1>
     </div>
   </template>
   <script>
@@ -31,19 +24,6 @@
       };
     },
     methods: {
-      async signOut() {
-        try {
-          this.loading = true;
-          let { error } = await this.supabase.auth.signOut();
-          navigateTo("/login");
-          if (error) throw error;
-          this.user = null;
-        } catch (error) {
-          alert(error.message);
-        } finally {
-          this.loading = false;
-        }
-      },
     },
   };
   </script>

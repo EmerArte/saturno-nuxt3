@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="fixed w-full p-6 bg-transparent z-50">
+    <nav class="fixed w-full p-6 bg-transparent z-40">
       <div class="flex items-center justify-between">
         <img src="~/assets/logo.svg" class="h-12" />
         <!-- Mobile toggle -->
@@ -51,6 +51,17 @@
             >
               Dashboard
             </li>
+            <li
+              class="p-3 rounded-md cursor-pointer text-secondary bg-transparent transition ease-in-out hover:font-bold hover:bg-primary hover:text-white delay-[100ms] hover:-translate-y-1 hover:scale-110 duration-150"
+              :class="
+                !isLogged
+                  ? 'hidden'
+                  : ''
+              "
+              @click="signOut"
+            >
+              Cerrar sesión
+            </li>
           </ul>
         </div>
         <div
@@ -80,7 +91,7 @@
             <li
               class="p-3 rounded-sm cursor-pointer bg-transparent transition ease-in-out hover:font-bold delay-[50ms] hover:-translate-y-1 hover:scale-110 duration-300"
               :class="
-                isLogged
+                !isLogged
                   ? 'hidden'
                   : currentRouteName === 'login'
                   ? ' text-orange-500'
@@ -116,8 +127,19 @@
             >
               Dashboard
             </li>
+            <li
+              class="p-3 rounded-md cursor-pointer text-secondary bg-transparent transition ease-in-out hover:font-bold hover:bg-primary hover:text-white delay-[100ms] hover:-translate-y-1 hover:scale-110 duration-150"
+              :class="
+                isLogged
+                  ? 'hidden'
+                  : 'text-gray-800'
+              "
+              @click="signOut"
+            >
+              Cerrar sesión
+            </li>
           </ul>
-          <a class="block md:hidden w-1/3 cursor-pointer transparent m-0 p-0 h-full" @click="isOpen = !isOpen"></a>
+          <a class="md:hidden cursor-pointer transparent m-0 p-0 h-full" :class="isOpen ? 'block w-1/3' : 'hidden'" @click="isOpen = !isOpen"></a>
         </div>
          
           <!--  -->
@@ -131,17 +153,37 @@ export default {
   data() {
     return {
       isOpen: false,
-      isLogged: false
+      isLogged: false,
     };
   },
   setup() {
     //SUPABASE CLIENT
+    const user = useSupabaseUser();
     const client = useSupabaseClient();
+    const loading = useLoading();
     return {
       client,
+      user,
+      loading
     };
   },
-  methods: {},
+  methods: {
+    async signOut() {
+        try {
+          this.loading = true;
+          let { error } = await this.client.auth.signOut();
+          if(error){
+            this.$vaToast.init({color:"danger", message: error.message,  duration: 5000})
+          }else{
+            navigateTo("/login")
+          }
+        } catch (error) {
+          alert(error.message);
+        } finally {
+          this.loading = false;
+        }
+      },
+  },
   computed: {
     currentRouteName() {
       return this.$route.name;
@@ -151,9 +193,10 @@ export default {
     watchEffect(()=>{
       if(this.user.value){
         this.isLogged = true;
+      }else{
+        this.isLogged = false;
       }
     })
   }
 };
 </script>
-<style lang=""></style>
